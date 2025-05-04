@@ -14,6 +14,9 @@ export default defineConfig({
     vueJsx(),
     vueDevTools(),
   ],
+  build: {
+    target: 'es2020' // Vercel's recommended target
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
