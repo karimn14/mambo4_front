@@ -66,10 +66,3 @@
     "vue-tsc": "^2.2.0"
   }
 }
-{
-  "dependencies": {
-    "vue": "^3.4.0",
-    "vue-router": "^4.2.5",
-    "vite": "^5.2.0",
-    "@vitejs/plugin-vue": "^5.0.4"
-  },
