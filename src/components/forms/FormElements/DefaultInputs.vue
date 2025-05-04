@@ -46,6 +46,16 @@ const formData = reactive({
 })
 
 const date = ref<string>('')
+const time = ref<string>('')
+
+// Explicitly expose properties to tests
+defineExpose({
+  formData,
+  showPassword,
+  date,
+  time
+})
+
 
 const flatpickrConfig = {
   dateFormat: 'Y-m-d',
@@ -63,5 +73,4 @@ const flatpickrTimeConfig = {
   wrap: false,
 }
 
-const time = ref<string>('')
 </script>

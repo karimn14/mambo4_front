@@ -34,15 +34,18 @@
 <script setup lang="ts">
 import { ref, defineProps } from 'vue';
 import FlatPickr from 'vue-flatpickr-component'
-import 'flatpickr/dist/flatpickr.css'
+// Replace DateOption import with:
+import type { Options } from 'flatpickr/dist/types/options'
 
+type DateOption = Options['defaultDate']
 const props = defineProps<{
-  modelValue: DateOption | DateOption[] | null;
+  modelValue: import('flatpickr/dist/types/options').Options['defaultDate'] | 
+              import('flatpickr/dist/types/options').Options['defaultDate'][] | 
+              null;
   config: Record<string, any>;
 }>();
-
-const modelValue = ref(props.modelValue);
-
+// ... rest of component
+// ... rest of your component
 function onInput(event: Event) {
   // Handle input event
 }

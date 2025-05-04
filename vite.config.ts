@@ -16,8 +16,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      'vue-flatpickr-component': path.resolve(__dirname, 'node_modules/vue-flatpickr-component/dist/esm/component.js'),
-    },
-  },
+      '@': path.resolve(__dirname, './src'),
+      // Add other aliases if needed
+    }
+  }
 })

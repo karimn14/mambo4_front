@@ -38,8 +38,9 @@
 
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from 'vue'
-import FlatPickr from 'vue-flatpickr-component';
-import type { DateOption } from 'flatpickr';
+import FlatPickr from 'vue-flatpickr-component';// Replace DateOption import with:
+import type { Options } from 'flatpickr/dist/types/options';
+
 
 // Define the DateOption type
 type DateOption = string | Date | number;
