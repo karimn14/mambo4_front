@@ -22,5 +22,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
       // Add other aliases if needed
     }
+  },
+  css: {
+    postcss: './postcss.config.cjs'
   }
 })
