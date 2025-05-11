@@ -18,7 +18,7 @@
             <InputGroup label="Nama Bahan" :modelValue="form.name" @update:modelValue="form.name = $event" type="text" id="name" />
             <InputGroup label="Jumlah Stok" :modelValue="form.stock" @update:modelValue="form.stock = $event" type="number" id="stock" />
             <InputGroup label="Satuan" :modelValue="form.unit" @update:modelValue="form.unit = $event" type="text" id="unit" />
-            <InputGroup label="Harga" :modelValue="form.price" @update:modelValue="form.price = $event" type="number" id="price" />
+            <InputGroup label="Harga" :modelValue="form.harga" @update:modelValue="form.harga = $event" type="number" id="harga" />
             <div class="flex justify-end">
               <button type="submit" class="btn btn-primary">Save</button>
             </div>
@@ -46,12 +46,29 @@ const selectedFilter = ref("");
 const isModalOpen = ref(false); // Reactive reference for modal visibility
 const isDarkMode = ref(false); // Reactive reference for dark mode
 
-const items = ref([
-  // Sample data
-  { id: 1, name: "Bahan A", stock: 100, unit: "kg", price: 50000, category: "category1" },
-  { id: 2, name: "Bahan B", stock: 200, unit: "ltr", price: 60000, category: "category2" },
-  // ...more items
-]);
+import axios from "axios";
+
+const items = ref([]);
+
+const fetchItems = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/mambo4/api/menu_supplier', {
+      params: { id_user: 4 }
+    });
+    const data = response.data.daftar;
+    items.value = data.map(item => ({
+      id: item.id,
+      name: item.nama_item,
+      harga: item.harga,
+      stock: item.volume,
+      category: 'category1'
+    }));
+  } catch (error) {
+    console.error('Error fetching items:', error);
+  }
+};
+
+fetchItems();
 
 const handleFilterChange = (filter) => {
   selectedFilter.value = filter;
@@ -69,7 +86,7 @@ const columns = ref([
   { title: "Nama Bahan", key: "name" },
   { title: "Jumlah Stok", key: "stock" },
   { title: "Satuan", key: "unit" },
-  { title: "Harga", key: "price" },
+  { title: "Harga", key: "harga" },
   { title: "Actions", key: "actions", render: (item) => {
       return h('button', {
         class: 'edit-button',
@@ -93,7 +110,7 @@ const form = reactive({
   name: '',
   stock: '',
   unit: '',
-  price: ''
+  harga: ''
 });
 
 const editItem = (id) => {
@@ -103,7 +120,7 @@ const editItem = (id) => {
     form.name = item.name;
     form.stock = item.stock;
     form.unit = item.unit;
-    form.price = item.price;
+    form.harga = item.harga;
     isModalOpen.value = true; // Open the modal
   }
 };

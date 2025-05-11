@@ -19,6 +19,7 @@
             <div class="space-y-4 overflow-y-auto max-h-96 space-x-4 p-y-1">
               <InputGroup label="Nama Paket" :modelValue="form.name" @update:modelValue="form.name = $event" type="text" id="name" />
               <InputGroup label="Jumlah Kalori" :modelValue="form.calories" @update:modelValue="form.calories = $event" type="number" id="calories" />
+              <InputGroup label="Harga" :modelValue="form.harga" @update:modelValue="form.harga = $event" type="number" id="harga" />
               <TextArea label="Isi Menu" :modelValue="form.menu" @update:modelValue="form.menu = $event" id="menu" />
               <InputGroup label="Max. Stok Per Hari" :modelValue="form.stock" @update:modelValue="form.stock = $event" type="number" id="stock" />
             </div>
@@ -37,7 +38,7 @@
             <div class="space-y-4 overflow-y-auto max-h-96 space-x-4 p-y-1">
               <InputGroup label="Nama Paket" v-model="newItem.name" type="text" id="new-name" />
               <InputGroup label="Jumlah Kalori" v-model="newItem.calories" type="number" id="new-calories" />
-              <TextArea label="Isi Menu" v-model="newItem.menu" id="new-menu" />
+              <TextArea label="Harga" v-model="newItem.harga" id="new-harga" />
               <InputGroup label="Max. Stok Per Hari" v-model="newItem.stock" type="number" id="new-stock" />
             </div>
             <div class="flex justify-end">
@@ -50,34 +51,55 @@
   </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, reactive, h } from "vue";
+import axios from "axios";
 import PageBreadcrumb from "@/components/common/PageBreadcrumb.vue";
 import AdminLayout from "@/components/layout/AdminLayout.vue";
-import FilterComponent from "@/components/common/FilterComponent.vue";
 import CustomTable from "@/components/tables/basic-tables/CustomTable.vue";
-import SearchBar from "@/components/common/SearchBar.vue";
-import Modal from "@/components/disdik/Modal.vue"; // Ensure the Modal component is correctly imported
-import InputGroup from "@/components/Vendor/InputGroup.vue"; // Import InputGroup component
-import TextArea from "@/components/Vendor/TextArea.vue"; // Import TextArea component
+import Modal from "@/components/disdik/Modal.vue";
+import InputGroup from "@/components/Vendor/InputGroup.vue";
+import TextArea from "@/components/Vendor/TextArea.vue";
 
 const currentPageTitle = ref("Menu Paket");
 const searchQuery = ref("");
 const selectedFilter = ref("");
-const isModalOpen = ref(false); // Reactive reference for modal visibility
-const isInsertModalOpen = ref(false); // Reactive reference for insert modal visibility
-const isDarkMode = ref(false); // Reactive reference for dark mode
+const isModalOpen = ref(false);
+const isInsertModalOpen = ref(false);
+const isLoading = ref(false); // Reactive reference for loading state
 
-const items = ref([
-  // Sample data
-  { id: 1, name: "Paket A", calories: 500, menu: "Menu A", stock: 100, category: "category1" },
-  { id: 2, name: "Paket B", calories: 600, menu: "Menu B", stock: 200, category: "category2" },
-  // ...more items
-]);
+const items = ref<{ id: number; name: string; calories: string; harga: string; stock: string; category: string }[]>([]);
 
-const handleFilterChange = (filter) => {
-  selectedFilter.value = filter;
+const fetchItems = async () => {
+  isLoading.value = true; // Start loading
+  try {
+    const response = await axios.get('http://localhost:8000/mambo4/api/vendor_paket?id_user=6');
+    const data = response.data.daftar;
+    items.value = data.map(item => ({
+      id: item.id,
+      name: item.nama_paket,
+      calories: item.kalori,
+      harga: item.pagu_harga,
+      stock: 100,
+      category: 'category1'
+    }));
+  } catch (error) {
+    if (error.response) {
+      alert(`Failed to fetch items! Server responded with status: ${error.response.status}`);
+      console.error('Error response:', error.response);
+    } else if (error.request) {
+      alert('Failed to fetch items! No response received from server.');
+      console.error('Error request:', error.request);
+    } else {
+      alert(`Failed to fetch items! Error: ${error.message}`);
+      console.error('Error message:', error.message);
+    }
+  } finally {
+    isLoading.value = false; // Stop loading
+  }
 };
+
+fetchItems();
 
 const filteredItems = computed(() => {
   return items.value.filter(item => 
@@ -90,7 +112,7 @@ const columns = ref([
   { title: "No", key: "id" },
   { title: "Nama Paket", key: "name" },
   { title: "Jumlah Kalori", key: "calories" },
-  { title: "Isi Menu", key: "menu" },
+  { title: "Harga", key: "harga" },
   { title: "Max. Stok Per Hari", key: "stock" },
   { title: "Actions", key: "actions", render: (item) => {
       return h('button', {
@@ -114,14 +136,14 @@ const form = reactive({
   id: null,
   name: '',
   calories: '',
-  menu: '',
+  harga: '',
   stock: ''
 });
 
 const newItem = reactive({
   name: '',
   calories: '',
-  menu: '',
+  harga: '',
   stock: ''
 });
 
@@ -131,35 +153,81 @@ const editItem = (id) => {
     form.id = item.id;
     form.name = item.name;
     form.calories = item.calories;
+    form.harga = item.harga;
     form.menu = item.menu;
     form.stock = item.stock;
-    isModalOpen.value = true; // Open the modal
+    isModalOpen.value = true;
   }
 };
 
-const saveItem = () => {
-  const index = items.value.findIndex(item => item.id === form.id);
-  if (index !== -1) {
-    items.value[index] = { ...form };
+const saveItem = async () => {
+  isLoading.value = true; // Start loading
+  try {
+    const response = await axios.put('http://localhost:8000/mambo4/api/vendor_paket', {
+      id_user: 6,
+      nama_paket: form.name,
+      pagu_harga: form.harga,
+      kalori: form.calories,
+      id_paket: form.id
+    });
+    alert('Item updated successfully!');
+    console.log('Item updated successfully:', response.data);
+    const index = items.value.findIndex(item => item.id === form.id);
+    if (index !== -1) {
+      items.value[index] = { ...form };
+    }
+    isModalOpen.value = false; // Close the modal
+  } catch (error) {
+    if (error.response) {
+      alert(`Failed to update item! Server responded with status: ${error.response.status}`);
+      console.error('Error response:', error.response);
+    } else if (error.request) {
+      alert('Failed to update item! No response received from server.');
+      console.error('Error request:', error.request);
+    } else {
+      alert(`Failed to update item! Error: ${error.message}`);
+      console.error('Error message:', error.message);
+    }
+  } finally {
+    isLoading.value = false; // Stop loading
   }
-  isModalOpen.value = false; // Close the modal
-};
-
-const openEditModal = () => {
-  isModalOpen.value = true;
 };
 
 const openInsertModal = () => {
   isInsertModalOpen.value = true;
 };
 
-const insertItem = () => {
-  items.value.push({ ...newItem, id: items.value.length + 1 });
-  isInsertModalOpen.value = false;
-  newItem.name = '';
-  newItem.calories = '';
-  newItem.menu = '';
-  newItem.stock = '';
+const insertItem = async () => {
+  isLoading.value = true; // Start loading
+  try {
+    const response = await axios.post('http://localhost:8000/mambo4/api/vendor_paket.json', {
+      id_user: 6,
+      nama_paket: newItem.name,
+      pagu_harga: newItem.harga,
+      kalori: newItem.calories
+    });
+    alert('Item inserted successfully!');
+    console.log('Item inserted successfully:', response.data);
+    items.value.push({ ...newItem, id: response.data.id });
+    isInsertModalOpen.value = false;
+    newItem.name = '';
+    newItem.calories = '';
+    newItem.harga = '';
+    newItem.stock = '';
+  } catch (error) {
+    if (error.response) {
+      alert(`Failed to insert item! Server responded with status: ${error.response.status}`);
+      console.error('Error response:', error.response);
+    } else if (error.request) {
+      alert('Failed to insert item! No response received from server.');
+      console.error('Error request:', error.request);
+    } else {
+      alert(`Failed to insert item! Error: ${error.message}`);
+      console.error('Error message:', error.message);
+    }
+  } finally {
+    isLoading.value = false; // Stop loading
+  }
 };
 </script>
 
@@ -175,7 +243,7 @@ const insertItem = () => {
   background: none;
   border: none;
   cursor: pointer;
-  color: #4a5568; /* Tailwind gray-600 */
+  color: #4a5568;
 }
 
 .blur-background {
@@ -196,7 +264,7 @@ const insertItem = () => {
 }
 
 .theme-button {
-  background-color: #4a5568; /* Tailwind gray-600 */
+  background-color: #4a5568;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;

@@ -75,7 +75,7 @@ const menuColumns = ref([
   { title: "Paket", key: "package" },
   { title: "Detail", key: "details" },
   { title: "Jumlah Kalori", key: "calories" },
-  { title: "Harga", key: "price" },
+  { title: "Harga", key: "harga" },
   { title: "Kapasitas per Hari", key: "capacityPerDay" },
   { title: "Isi Menu", key: "menuContent" }
 ]);
