@@ -163,13 +163,8 @@ const editItem = (id) => {
 const saveItem = async () => {
   isLoading.value = true; // Start loading
   try {
-    const response = await axios.put('http://localhost:8000/mambo4/api/vendor_paket', {
-      id_user: 6,
-      nama_paket: form.name,
-      pagu_harga: form.harga,
-      kalori: form.calories,
-      id_paket: form.id
-    });
+    const url = `http://localhost:8000/mambo4/api/vendor_paket?id_user=6&nama_paket=${encodeURIComponent(form.name)}&pagu_harga=${form.harga}&kalori=${form.calories}&id_paket=${form.id}`;
+    const response = await axios.put(url);
     alert('Item updated successfully!');
     console.log('Item updated successfully:', response.data);
     const index = items.value.findIndex(item => item.id === form.id);
@@ -193,9 +188,6 @@ const saveItem = async () => {
   }
 };
 
-axios.defaults.baseURL = 'http://localhost:8000/mambo4/api/'
-axios.defaults.withCredentials = true
-
 const openInsertModal = () => {
   isInsertModalOpen.value = true;
 };
@@ -203,15 +195,8 @@ const openInsertModal = () => {
 const insertItem = async () => {
   isLoading.value = true; // Start loading
   try {
-    const response = await axios.post('http://localhost:8000/mambo4/api/vendor_paket.json', {
-      id_user: 6,
-      nama_paket: newItem.name,
-      pagu_harga: newItem.harga,
-      kalori: newItem.calories
-    }, {
-    headers: {'Content-Type': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest' }}
-  );
+    const url = `http://localhost:8000/mambo4/api/vendor_paket?id_user=6&nama_paket=${encodeURIComponent(newItem.name)}&pagu_harga=${newItem.harga}&kalori=${newItem.calories}`;
+    const response = await axios.post(url);
     alert('Item inserted successfully!');
     console.log('Item inserted successfully:', response.data);
     items.value.push({ ...newItem, id: response.data.id });
