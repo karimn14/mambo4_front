@@ -193,6 +193,9 @@ const saveItem = async () => {
   }
 };
 
+axios.defaults.baseURL = 'http://localhost:8000/mambo4/api/'
+axios.defaults.withCredentials = true
+
 const openInsertModal = () => {
   isInsertModalOpen.value = true;
 };
@@ -205,7 +208,10 @@ const insertItem = async () => {
       nama_paket: newItem.name,
       pagu_harga: newItem.harga,
       kalori: newItem.calories
-    });
+    }, {
+    headers: {'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest' }}
+  );
     alert('Item inserted successfully!');
     console.log('Item inserted successfully:', response.data);
     items.value.push({ ...newItem, id: response.data.id });
