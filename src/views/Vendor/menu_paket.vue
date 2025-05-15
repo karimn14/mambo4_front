@@ -4,13 +4,13 @@
     <div :class="{'blur-background': isModalOpen || isInsertModalOpen}" class="space-y-5 sm:space-y-6">
       <div class="flex justify-between items-center">
         <input v-model="searchQuery" type="text" placeholder="Search..." class="search-bar" />
-        <div class="filters">
-          <!-- Add filter components here -->
-        </div>
+        <button @click="openInsertModal" class="insert-button ml-auto flex items-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#4a5568"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+          <span>Insert Paket</span>
+        </button>
       </div>
       <CustomTable :columns="columns" :data="filteredItems" />
     </div>
-    <button @click="openInsertModal" class="theme-button">Insert Paket</button>
     <div v-if="isModalOpen" class="modal-overlay">
       <Modal @close="isModalOpen = false">
         <template #header>Edit Paket</template>
@@ -23,8 +23,14 @@
               <TextArea label="Isi Menu" :modelValue="form.menu" @update:modelValue="form.menu = $event" id="menu" />
               <InputGroup label="Max. Stok Per Hari" :modelValue="form.stock" @update:modelValue="form.stock = $event" type="number" id="stock" />
             </div>
-            <div class="flex justify-end">
-              <button type="submit" class="btn btn-primary">Save</button>
+            <div class="flex justify-end gap-2">
+              <button type="button" class="insert-button btn btn-danger flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#a13f3f">
+              <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+              </svg>
+              <span style="color: #a13f3f;">Delete</span>
+              </button>
+              <button type="submit" class="insert-button btn btn-primary">Save</button>
             </div>
           </form>
         </template>
@@ -41,8 +47,14 @@
               <TextArea label="Harga" v-model="newItem.harga" id="new-harga" />
               <InputGroup label="Max. Stok Per Hari" v-model="newItem.stock" type="number" id="new-stock" />
             </div>
-            <div class="flex justify-end">
-              <button type="submit" class="btn btn-primary">Save</button>
+            <div class="flex justify-end gap-2">
+              <button type="button" class="insert-button btn btn-danger flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#a13f3f">
+              <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+              </svg>
+              <span style="color: #a13f3f;">Delete</span>
+              </button>
+              <button type="submit" class="insert-button btn btn-primary">Save</button>
             </div>
           </form>
         </template>
@@ -126,7 +138,8 @@ const columns = ref([
             d: 'M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z',
             fill: ''
           })
-        ]), ' Edit'
+        ]),
+        ' Edit'
       ]);
     }
   }
@@ -235,6 +248,17 @@ const insertItem = async () => {
   border: none;
   cursor: pointer;
   color: #4a5568;
+}
+
+.insert-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: #4a5568;
+  padding: 0.5rem 1rem;
 }
 
 .blur-background {

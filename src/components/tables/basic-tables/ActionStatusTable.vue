@@ -9,15 +9,16 @@
             <th v-for="column in columns" :key="column.key" :class="['px-5 py-3 text-left sm:px-6', columnClass]">
               <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">{{ column.title }}</p>
             </th>
+            <th v-if="showActions" class="px-5 py-3 text-left sm:px-6">Action</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="(item, index) in data" :key="index" class="border-t border-gray-100 dark:border-gray-800">
+          <tr v-for="(item, index) in data" :key="index" class="border-t border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
             <td v-for="column in columns" :key="column.key" :class="['px-5 py-4 sm:px-6', columnClass, 'dark:text-white']">
               <span v-if="column.key !== 'statusPaket'">{{ item[column.key] }}</span>
               <span v-else>
                 <span
-                    :class="[
+                  :class="[
                     'rounded-full px-2 py-0.5 text-theme-xs font-medium',
                     {
                       'bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500': item[column.key] === 'Diterima',
@@ -30,6 +31,15 @@
                   {{ item[column.key] }}
                 </span>
               </span>
+            </td>
+            <td v-if="showActions" class="px-5 py-4 sm:px-6 dark:text-white">
+              <button
+                v-if="actionLabel"
+                class="action-button"
+                @click="$emit('action', { item, action: actionLabel })"
+              >
+                {{ actionLabel }}
+              </button>
             </td>
           </tr>
         </tbody>
@@ -49,6 +59,14 @@ const props = defineProps({
   data: {
     type: Array,
     required: true
+  },
+  showActions: {
+    type: Boolean,
+    default: true
+  },
+  actionLabel: {
+    type: String,
+    default: ''
   }
 });
 
@@ -58,5 +76,19 @@ const columnClass = computed(() => {
 </script>
 
 <style scoped>
-/* Add any additional styles here if needed */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.2s;
+}
+.action-button:hover {
+  background: #1d4ed8;
+}
 </style>
